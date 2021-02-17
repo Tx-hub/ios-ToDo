@@ -22,7 +22,7 @@ struct EditingPage: View {
             Form{
                 Section(header: Text("事项")){
                     TextField("事项内容", text: self.$title)
-                    DatePicker(selection: /*@START_MENU_TOKEN@*/.constant(Date())/*@END_MENU_TOKEN@*/, label: { Text("截止时间") })
+                    DatePicker(selection: self.$duedate, label: { Text("截止时间") })
                   
                 }
                 Section{

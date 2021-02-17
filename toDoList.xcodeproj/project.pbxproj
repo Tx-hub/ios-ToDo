@@ -35,6 +35,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		D59276D525DD11C9001E5C4D /* toDoList.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = toDoList.entitlements; sourceTree = "<group>"; };
 		D592AEB725DB7B5B00C57B38 /* toDoList.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = toDoList.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D592AEBA25DB7B5B00C57B38 /* toDoListApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = toDoListApp.swift; sourceTree = "<group>"; };
 		D592AEBC25DB7B5B00C57B38 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -99,6 +100,7 @@
 		D592AEB925DB7B5B00C57B38 /* toDoList */ = {
 			isa = PBXGroup;
 			children = (
+				D59276D525DD11C9001E5C4D /* toDoList.entitlements */,
 				D592AEBA25DB7B5B00C57B38 /* toDoListApp.swift */,
 				D592AEBC25DB7B5B00C57B38 /* ContentView.swift */,
 				D592AEBE25DB7B5E00C57B38 /* Assets.xcassets */,
@@ -425,6 +427,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = toDoList/toDoList.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"toDoList/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
@@ -446,6 +449,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = toDoList/toDoList.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"toDoList/Preview Content\"";
 				ENABLE_PREVIEWS = YES;

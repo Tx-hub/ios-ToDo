@@ -6,7 +6,11 @@
 //
 
 import SwiftUI
+
+var formatter = DateFormatter()
 func initUserData() -> [SingToDo]{
+    formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+    
     var output: [SingToDo] = []
     if let dataStored = UserDefaults.standard.object(forKey: "ToDoList") as? Data {
         
@@ -25,6 +29,11 @@ struct ContentView: View {
     @ObservedObject var userData:ToDo = ToDo(data:initUserData())
     
     @State var showEditingPage = false
+    
+    @State var editingMode = false
+    
+    
+    @State var selection: [Int] = []
     var body: some View {
         ZStack {
             NavigationView{
@@ -32,10 +41,12 @@ struct ContentView: View {
                     VStack{
                         ForEach(self.userData.ToDoList){item in
                             if !item.deleted{
-                                SingleCardView(index: item.id)
+                                SingleCardView(selection: self.$selection, index: item.id,editingMode: self.$editingMode)
                                     .environmentObject(self.userData)
                                     .padding(.top)
                                     .padding(.horizontal)
+                                    .animation(.spring())
+                                    .transition(.slide)
                             }
                           
                             
@@ -46,6 +57,15 @@ struct ContentView: View {
                   
             }
                 .navigationBarTitle("提醒事项")
+                .navigationBarItems(trailing:
+                                        HStack {
+                                            if self.editingMode{
+                                                deleteButton(selection: self.$selection)
+                                                    .environmentObject(self.userData)
+                                            }
+                                            
+                                            EditingButton(editingMode: self.$editingMode, selection: self.$selection)
+                                        })
           
             }
            
@@ -54,8 +74,9 @@ struct ContentView: View {
                 VStack {
                     Spacer()
                     Button(action: {
-                        self.showEditingPage = true
-                        
+                        if !self.editingMode{
+                            self.showEditingPage = true
+                        }
                     }){
                         Image(systemName: "plus.circle.fill")
                             .resizable()
@@ -75,28 +96,63 @@ struct ContentView: View {
        
     }
 }
+struct deleteButton: View {
+    @Binding var selection: [Int]
+    @EnvironmentObject var userData: ToDo
+    var body: some View{
+        Button(action: {
+            for i in self.selection {
+                self.userData.delete(id: i)
+            }
+            
+        }){
+            Image(systemName: "trash")
+                .imageScale(.large)
+            
+        }
+    }
+}
+struct EditingButton: View {
+    @Binding var editingMode: Bool
+    @Binding var selection: [Int]
+    var body: some View{
+        Button(action: {
+            self.editingMode.toggle()
+            self.selection.removeAll()
+        }){
+            Image(systemName: "gear")
+                .imageScale(.large)
+        }
+       
+    }
+}
 struct SingleCardView:View {
-
+    @Binding var selection:[Int]
     @EnvironmentObject var userData: ToDo
     var index: Int
     
     @State  var showEditingPage = false
+    @Binding var editingMode:Bool
+    
  
     var body: some View {
         HStack{
             Rectangle()
                 .frame(width: 6)
                 .foregroundColor(/*@START_MENU_TOKEN@*/.blue/*@END_MENU_TOKEN@*/)
-            Button(action: {
-                self.userData.delete(id: self.index)
-                
-            }){
-                Image(systemName: "trash")
-                    .imageScale(.large)
-                    .padding(.leading)
-                
-                    .foregroundColor(.black)
+            if editingMode{
+                Button(action: {
+                    self.userData.delete(id: self.index)
+                    
+                }){
+                    Image(systemName: "trash")
+                        .imageScale(.large)
+                        .padding(.leading)
+                    
+                        .foregroundColor(.black)
+                }
             }
+            
           
             Button(
                 action: {
@@ -110,7 +166,7 @@ struct SingleCardView:View {
                             .fontWeight(.heavy)
                             .foregroundColor(.black)
                         
-                        Text(self.userData.ToDoList[index].duedate.description)
+                        Text(formatter.string(from:self.userData.ToDoList[index].duedate) )
                             .font(.subheadline)
                             .foregroundColor(.gray)
                     }
@@ -128,13 +184,33 @@ struct SingleCardView:View {
             
             
         
+            if !editingMode{
+                Image(systemName: self.userData.ToDoList[index].isChecked ?  "checkmark.square.fill":"square")
+                    .imageScale(.large)
+                    .padding(.trailing)
+                    .onTapGesture{
+                        self.userData.check(id: index)
+                    }
+            }
+            else{
+                Image(systemName: self.selection.firstIndex(where:{
+                    $0 == self.index
+                }) == nil ? "circle" : "checkmark.circle.fill")
+                    .imageScale(.large)
+                    .padding(.trailing)
+                    .onTapGesture{
+                        if self.selection.firstIndex(where: { $0 == self.index
+                        }) == nil{
+                            self.selection.append(self.index)
+                        }else{
+                            self.selection.remove(at: self.selection.firstIndex(where:{
+                                $0 == self.index
+                            })!)
+                        }
+                    }
+            }
             
-            Image(systemName: self.userData.ToDoList[index].isChecked ?  "checkmark.square.fill":"square")
-                .imageScale(.large)
-                .padding(.trailing)
-                .onTapGesture{
-                    self.userData.check(id: index)
-                }
+           
              
         }
         .frame(height:80)
@@ -146,6 +222,11 @@ struct SingleCardView:View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        ContentView(userData: ToDo(data: [
+                                    SingToDo(title: "写作业", duedate: Date()),
+                                             
+                                             SingToDo(title: "复习", duedate: Date())
+                        
+        ]))
     }
 }
